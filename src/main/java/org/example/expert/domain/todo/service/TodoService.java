@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class TodoService {
 
     private final TodoRepository todoRepository;
@@ -47,10 +48,15 @@ public class TodoService {
         );
     }
 
-    public Page<TodoResponse> getTodos(int page, int size) {
+    public Page<TodoResponse> getTodos(int page, int size, String weather) {
         Pageable pageable = PageRequest.of(page - 1, size);
 
         Page<Todo> todos = todoRepository.findAllByOrderByModifiedAtDesc(pageable);
+
+        // weather 조건이 있으면
+        if(weather != null) {
+            todos = todoRepository.findAllByWeatherOrderByModifiedAtDesc(pageable, weather);
+        }
 
         return todos.map(todo -> new TodoResponse(
                 todo.getId(),
