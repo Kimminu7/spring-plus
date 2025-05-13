@@ -8,16 +8,16 @@ import org.example.expert.domain.todo.dto.request.TodoSaveRequest;
 import org.example.expert.domain.todo.dto.response.TodoResponse;
 import org.example.expert.domain.todo.dto.response.TodoSaveResponse;
 import org.example.expert.domain.todo.entity.Todo;
-import org.example.expert.domain.todo.repository.QTodoRepository;
 import org.example.expert.domain.todo.repository.TodoRepository;
 import org.example.expert.domain.user.dto.response.UserResponse;
 import org.example.expert.domain.user.entity.User;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -50,14 +50,21 @@ public class TodoService {
         );
     }
 
-    public Page<TodoResponse> getTodos(int page, int size, String weather) {
+    public Page<TodoResponse> getTodos(int page, int size, String weather, LocalDate startDate, LocalDate endDate) {
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        Page<Todo> todos = todoRepository.findAllByOrderByModifiedAtDesc(pageable);
+        // JSON 형태는 String으로 받아야함.
+        String startDateString = startDate.toString();
+        String endDateString = endDate.toString();
 
-        // weather 조건이 있으면
+
+        // weather 조건 없으면 일반적인것.
+        Page<Todo> todos = todoRepository.findAllByOrderByModifiedAtDesc(pageable, startDateString, endDateString);
+
+
+        // weather 조건 있으면
         if(weather != null) {
-            todos = todoRepository.findAllByWeatherOrderByModifiedAtDesc(pageable, weather);
+            todos = todoRepository.findAllByWeatherOrderByModifiedAtDesc(pageable, weather, startDateString, endDateString);
         }
 
         return todos.map(todo -> new TodoResponse(
