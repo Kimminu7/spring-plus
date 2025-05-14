@@ -53,30 +53,31 @@ public class QTodoRepositoryImpl implements QTodoRepository{
         LocalDateTime startDateTime = startDate != null ? startDate.atStartOfDay() : LocalDateTime.MIN;
         LocalDateTime endDateTime = endDate != null ? endDate.atTime(LocalTime.MAX) : LocalDateTime.MAX;
 
-        // 본 쿼리
+        // 본 쿼리 ( 실제 결과 조회 )
         List<TodoSearchResponse> content = jpaQueryFactory
                 .select(Projections.constructor(
-                        TodoSearchResponse.class,
+                        TodoSearchResponse.class, // 생성자 매핑
                         todo.title,
-                        manager.id.countDistinct(),
-                        JPAExpressions.select(comment.count())
+                        manager.id.countDistinct(), // Todo 하나에 연결된 고유한 매니저수
+                        JPAExpressions.select(comment.count()) // 서브쿼리로 todo에 해당하는 댓글수 계산
                                 .from(comment)
                                 .where(comment.todo.id.eq(todo.id))
                 ))
                 .from(todo)
                 .leftJoin(todo.managers, manager)
-                .leftJoin(manager.user, user)
+                .leftJoin(manager.user, user) // 담당자 정보와 닉네임 조건 매칭
                 .where(
                         titleContains(title),
                         todo.createdAt.between(startDateTime, endDateTime),
-                        nicknameContains(nickname)
+                        nicknameContains(nickname) // 제목, 생성일자, 닉네임 조건
                 )
-                .groupBy(todo.id, todo.title)
+                .groupBy(todo.id, todo.title) // count, 서브쿼리 등으로 인한 그룹핑 필요
                 .orderBy(todo.createdAt.desc())
                 .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
+                .limit(pageable.getPageSize()) // 페이징 처리 (offset, limit)
                 .fetch();
 
+        // 페이징 처리를 위한 전체 결과 개수 조회 쿼리
         Long total = jpaQueryFactory
                 .select(todo.countDistinct())
                 .from(todo)
@@ -89,6 +90,7 @@ public class QTodoRepositoryImpl implements QTodoRepository{
                 )
                 .fetchOne();
 
+        // Spring Data Page<T> 객체로 반환 t otal이 null이면 0 처리
         return new PageImpl<>(content, pageable, total == null ? 0 : total);
     }
 
