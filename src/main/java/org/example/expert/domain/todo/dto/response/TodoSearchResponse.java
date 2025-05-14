@@ -1,7 +1,6 @@
 package org.example.expert.domain.todo.dto.response;
 
 import lombok.Getter;
-import org.example.expert.domain.common.entity.Timestamped;
 
 @Getter
 public class TodoSearchResponse {
