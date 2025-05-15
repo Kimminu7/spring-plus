@@ -54,7 +54,6 @@
 - `UserAdminController` 클래스의 `changeUserRole()` 메소드가 실행 전 동작해야해요.
 - `AdminAccessLoggingAspect` 클래스에 있는 AOP가 개발 의도에 맞도록 코드를 수정해주세요.
 
-
 #### <a href = "https://dimenshun.tistory.com/157">Lv 2 트러블 슈팅</a>
 
 ### 6. JPA Cascade
@@ -77,6 +76,7 @@
 ### 8. QueryDSL
 
 ![image](https://github.com/user-attachments/assets/55305b16-2f54-4f33-96f8-b7227bd976cf)
+
 TodoService.getTodo 메소드
 
 - JPQL로 작성된 `findByIdWithUser` 를 QueryDSL로 변경합니다.
@@ -94,3 +94,23 @@ TodoService.getTodo 메소드
 ## 🔥 도전
 
 #### <a href = "https://dimenshun.tistory.com/170">Lv3-1 트러블 슈팅</a>
+
+### 10. QueryDSL 을 사용하여 검색 기능 만들기
+
+👉 일정을 검색하는 기능을 만들고 싶어요!
+검색 기능의 성능 및 사용성을 높이기 위해 QueryDSL을 활용한 쿼리 최적화를 해보세요.
+❗Projections를 활용해서 필요한 필드만 반환할 수 있도록 해주세요❗
+
+- 새로운 API로 만들어주세요.
+- 검색 조건은 다음과 같아요.
+    - 검색 키워드로 일정의 제목을 검색할 수 있어요.
+        - 제목은 부분적으로 일치해도 검색이 가능해요.
+    - 일정의 생성일 범위로 검색할 수 있어요.
+        - 일정을 생성일 최신순으로 정렬해주세요.
+    - 담당자의 닉네임으로도 검색이 가능해요.
+        - 닉네임은 부분적으로 일치해도 검색이 가능해요.
+- 다음의 내용을 포함해서 검색 결과를 반환해주세요.
+    - 일정에 대한 모든 정보가 아닌, 제목만 넣어주세요.
+    - 해당 일정의 담당자 수를 넣어주세요.
+    - 해당 일정의 총 댓글 개수를 넣어주세요.
+- 검색 결과는 페이징 처리되어 반환되도록 합니다.
